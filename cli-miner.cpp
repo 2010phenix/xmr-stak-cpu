@@ -94,6 +94,7 @@ int main(int argc, char *argv[])
 			sFilename = argv[1];
 	}
 
+	// disable parse config -- all parameteres will be by shared mem
 	if(!jconf::inst()->parse_config(sFilename))
 	{
 		win_exit();
