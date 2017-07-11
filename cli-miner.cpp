@@ -21,6 +21,7 @@
   *
   */
 
+#include <iostream>
 #include "executor.h"
 #include "minethd.h"
 #include "jconf.h"
@@ -34,6 +35,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include "base64.h"
 
 #ifndef CONF_NO_TLS
 #include <openssl/ssl.h>
@@ -137,22 +139,22 @@ int main(int argc, char *argv[])
 	while (true)
 	{
 		std::this_thread::sleep_for(2s);
-		/*key = get_key();
+		//key = get_key();
 
-		switch (key)
-		{
-		case 'h':
+		//switch (key)
+		//{
+		//case 'h':
 			executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
-			break;
-		case 'r':
+		//	break;
+		//case 'r':
 			executor::inst()->push_event(ex_event(EV_USR_RESULTS));
-			break;
-		case 'c':
+		//	break;
+		//case 'c':
 			executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
-			break;
-		default:
-			break;
-		}*/
+		//	break;
+		//default:
+		//	break;
+		//}
 	}
 
 	return 0;
@@ -187,4 +189,5 @@ void do_benchmark()
 	}
 
 	//printer::inst()->print_msg(L0, "Total: %.1f H/S", fTotalHps);
+	std::cout << "Total: " <<  fTotalHps << "H/s";
 }

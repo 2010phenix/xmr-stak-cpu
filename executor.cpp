@@ -21,6 +21,7 @@
   *
   */
 
+#include <iostream>
 #include <thread>
 #include <string>
 #include <cmath>
@@ -33,6 +34,7 @@
 #include "jconf.h"
 #include "donate-level.h"
 #include "webdesign.h"
+
 
 #ifdef _WIN32
 #define strncasecmp _strnicmp
@@ -689,6 +691,7 @@ void executor::print_report(ex_event_name ev)
 		break;
 	}
 
+	std::cout << out;
 	//printer::inst()->print_str(out.c_str());
 }
 
