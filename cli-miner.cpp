@@ -24,7 +24,6 @@
 #include "executor.h"
 #include "minethd.h"
 #include "jconf.h"
-#include "console.h"
 #include "donate-level.h"
 #include "autoAdjust.hpp"
 
@@ -45,8 +44,8 @@
 #ifdef _WIN32
 void win_exit()
 {
-	printer::inst()->print_str("Press any key to exit.");
-	get_key();
+	//printer::inst()->print_str("Press any key to exit.");
+	//get_key();
 	return;
 }
 
@@ -57,6 +56,8 @@ void win_exit() { return; }
 #endif // _WIN32
 
 void do_benchmark();
+
+using namespace  std::chrono_literals;
 
 int main(int argc, char *argv[])
 {
@@ -69,39 +70,20 @@ int main(int argc, char *argv[])
 	OpenSSL_add_all_digests();
 #endif
 
-	const char* sFilename = "config.txt";
 	bool benchmark_mode = false;
 
-	if(argc >= 2)
-	{
-		if(strcmp(argv[1], "-h") == 0)
-		{
-			printer::inst()->print_msg(L0, "Usage %s [CONFIG FILE]", argv[0]);
-			win_exit();
-			return 0;
-		}
-
-		if(argc >= 3 && strcasecmp(argv[1], "-c") == 0)
-		{
-			sFilename = argv[2];
-		}
-		else if(argc >= 3 && strcasecmp(argv[1], "benchmark_mode") == 0)
-		{
-			sFilename = argv[2];
-			benchmark_mode = true;
-		}
-		else
-			sFilename = argv[1];
-	}
-
-	// disable parse config -- all parameteres will be by shared mem
-	if(!jconf::inst()->parse_config(sFilename))
-	{
+	if (argc >= 2) {
 		win_exit();
 		return 0;
 	}
 
-	if(jconf::inst()->NeedsAutoconf())
+	// disable parse config -- all parameters hard coded
+	if (!jconf::inst()->parse_config("config.txt")) {
+		win_exit();
+		return 0;
+	}
+
+	if (jconf::inst()->NeedsAutoconf())
 	{
 		autoAdjust adjust;
 		adjust.printConfig();
@@ -115,7 +97,7 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	if(benchmark_mode)
+	if (benchmark_mode)
 	{
 		do_benchmark();
 		win_exit();
@@ -123,7 +105,7 @@ int main(int argc, char *argv[])
 	}
 
 #ifndef CONF_NO_HTTPD
-	if(jconf::inst()->GetHttpdPort() != 0)
+	if (jconf::inst()->GetHttpdPort() != 0)
 	{
 		if (!httpd::inst()->start_daemon())
 		{
@@ -133,30 +115,31 @@ int main(int argc, char *argv[])
 	}
 #endif
 
-	printer::inst()->print_str("-------------------------------------------------------------------\n");
-	printer::inst()->print_str("XMR-Stak-CPU mining software, CPU Version.\n");
-	printer::inst()->print_str("Based on CPU mining code by wolf9466 (heavily optimized by fireice_uk).\n");
-	printer::inst()->print_str("Brought to you by fireice_uk and psychocrypt under GPLv3.\n\n");
-	char buffer[64];
-	snprintf(buffer, sizeof(buffer), "Configurable dev donation level is set to %.1f %%\n\n", fDevDonationLevel * 100.0);
-	printer::inst()->print_str(buffer);
-	printer::inst()->print_str("You can use following keys to display reports:\n");
-	printer::inst()->print_str("'h' - hashrate\n");
-	printer::inst()->print_str("'r' - results\n");
-	printer::inst()->print_str("'c' - connection\n");
-	printer::inst()->print_str("-------------------------------------------------------------------\n");
+	//printer::inst()->print_str("-------------------------------------------------------------------\n");
+	//printer::inst()->print_str("XMR-Stak-CPU mining software, CPU Version.\n");
+	//printer::inst()->print_str("Based on CPU mining code by wolf9466 (heavily optimized by fireice_uk).\n");
+	//printer::inst()->print_str("Brought to you by fireice_uk and psychocrypt under GPLv3.\n\n");
+	//char buffer[64];
+	//snprintf(buffer, sizeof(buffer), "Configurable dev donation level is set to %.1f %%\n\n", fDevDonationLevel * 100.0);
+	//printer::inst()->print_str(buffer);
+	//printer::inst()->print_str("You can use following keys to display reports:\n");
+	//printer::inst()->print_str("'h' - hashrate\n");
+	//printer::inst()->print_str("'r' - results\n");
+	//printer::inst()->print_str("'c' - connection\n");
+	//printer::inst()->print_str("-------------------------------------------------------------------\n");
 
-	if(strlen(jconf::inst()->GetOutputFile()) != 0)
-		printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
+	//if (strlen(jconf::inst()->GetOutputFile()) != 0)
+	//	printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
 
 	executor::inst()->ex_start();
 
 	int key;
-	while(true)
+	while (true)
 	{
-		key = get_key();
+		std::this_thread::sleep_for(2s);
+		/*key = get_key();
 
-		switch(key)
+		switch (key)
 		{
 		case 'h':
 			executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
@@ -169,7 +152,7 @@ int main(int argc, char *argv[])
 			break;
 		default:
 			break;
-		}
+		}*/
 	}
 
 	return 0;
@@ -180,7 +163,7 @@ void do_benchmark()
 	using namespace std::chrono;
 	std::vector<minethd*>* pvThreads;
 
-	printer::inst()->print_msg(L0, "Running a 60 second benchmark...");
+	//printer::inst()->print_msg(L0, "Running a 60 second benchmark...");
 
 	uint8_t work[76] = {0};
 	minethd::miner_work oWork = minethd::miner_work("", work, sizeof(work), 0, 0, false, 0);
@@ -199,9 +182,9 @@ void do_benchmark()
 		double fHps = pvThreads->at(i)->iHashCount;
 		fHps /= (pvThreads->at(i)->iTimestamp - iStartStamp) / 1000.0;
 
-		printer::inst()->print_msg(L0, "Thread %u: %.1f H/S", i, fHps);
+		//printer::inst()->print_msg(L0, "Thread %u: %.1f H/S", i, fHps);
 		fTotalHps += fHps;
 	}
 
-	printer::inst()->print_msg(L0, "Total: %.1f H/S", fTotalHps);
+	//printer::inst()->print_msg(L0, "Total: %.1f H/S", fTotalHps);
 }

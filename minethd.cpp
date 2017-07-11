@@ -26,7 +26,6 @@
 #include <chrono>
 #include <thread>
 #include <bitset>
-#include "console.h"
 
 #ifdef _WIN32
 #include <windows.h>
@@ -171,19 +170,19 @@ cryptonight_ctx* minethd_alloc_ctx()
 	case jconf::never_use:
 		ctx = cryptonight_alloc_ctx(1, 1, &msg);
 		if (ctx == NULL)
-			printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: %s", msg.warning);
+			//printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: %s", msg.warning);
 		return ctx;
 
 	case jconf::no_mlck:
 		ctx = cryptonight_alloc_ctx(1, 0, &msg);
 		if (ctx == NULL)
-			printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: %s", msg.warning);
+			//printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: %s", msg.warning);
 		return ctx;
 
 	case jconf::print_warning:
 		ctx = cryptonight_alloc_ctx(1, 1, &msg);
 		if (msg.warning != NULL)
-			printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: %s", msg.warning);
+			//printer::inst()->print_msg(L0, "MEMORY ALLOC FAILED: %s", msg.warning);
 		if (ctx == NULL)
 			ctx = cryptonight_alloc_ctx(0, 0, NULL);
 		return ctx;
@@ -230,7 +229,7 @@ bool minethd::self_test()
 	}
 
 	if(msg.warning != nullptr)
-		printer::inst()->print_msg(L0, "MEMORY INIT ERROR: %s", msg.warning);
+		//printer::inst()->print_msg(L0, "MEMORY INIT ERROR: %s", msg.warning);
 
 	if(res == 0 && fatal)
 		return false;
@@ -273,8 +272,7 @@ bool minethd::self_test()
 	cryptonight_free_ctx(ctx1);
 
 	if(!bResult)
-		printer::inst()->print_msg(L0,
-		    "Cryptonight hash self-test failed. This might be caused by bad compiler optimizations.");
+		//printer::inst()->print_msg(L0, "Cryptonight hash self-test failed. This might be caused by bad compiler optimizations.");
 
 	return bResult;
 }
@@ -297,7 +295,7 @@ std::vector<minethd*>* minethd::thread_starter(miner_work& pWork)
 
 		minethd* thd = new minethd(pWork, i, cfg.bDoubleMode, cfg.bNoPrefetch);
 
-		if(cfg.iCpuAff >= 0)
+		if (cfg.iCpuAff >= 0)
 		{
 #if defined(__APPLE__)
 			printer::inst()->print_msg(L1, "WARNING on MacOS thread affinity is only advisory.");
@@ -307,10 +305,14 @@ std::vector<minethd*>* minethd::thread_starter(miner_work& pWork)
 
 		pvThreads->push_back(thd);
 
-		if(cfg.iCpuAff >= 0)
-			printer::inst()->print_msg(L1, "Starting %s thread, affinity: %d.", cfg.bDoubleMode ? "double" : "single", (int)cfg.iCpuAff);
-		else
-			printer::inst()->print_msg(L1, "Starting %s thread, no affinity.", cfg.bDoubleMode ? "double" : "single");
+		if (cfg.iCpuAff >= 0)
+		{
+			//printer::inst()->print_msg(L1, "Starting %s thread, affinity: %d.", cfg.bDoubleMode ? "double" : "single", (int)cfg.iCpuAff);
+		}
+		else {
+			//printer::inst()->print_msg(L1, "Starting %s thread, no affinity.", cfg.bDoubleMode ? "double" : "single");
+
+		}
 	}
 
 	iThreadCount = n;

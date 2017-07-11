@@ -24,7 +24,6 @@
 #include "socket.h"
 #include "jpsock.h"
 #include "jconf.h"
-#include "console.h"
 #include "executor.h"
 
 #ifndef CONF_NO_TLS

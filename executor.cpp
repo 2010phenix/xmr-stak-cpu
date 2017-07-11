@@ -31,7 +31,6 @@
 #include "jpsock.h"
 #include "minethd.h"
 #include "jconf.h"
-#include "console.h"
 #include "donate-level.h"
 #include "webdesign.h"
 
@@ -109,13 +108,12 @@ void executor::sched_reconnect()
 	size_t iLimit = jconf::inst()->GetGiveUpLimit();
 	if(iLimit != 0 && iReconnectAttempts > iLimit)
 	{
-		printer::inst()->print_msg(L0, "Give up limit reached. Exitting.");
+		//printer::inst()->print_msg(L0, "Give up limit reached. Exitting.");
 		exit(0);
 	}
 
 	long long unsigned int rt = jconf::inst()->GetNetRetry();
-	printer::inst()->print_msg(L1, "Pool connection lost. Waiting %lld s before retry (attempt %llu).",
-		rt, int_port(iReconnectAttempts));
+	//printer::inst()->print_msg(L1, "Pool connection lost. Waiting %lld s before retry (attempt %llu).", rt, int_port(iReconnectAttempts));
 
 	auto work = minethd::miner_work();
 	minethd::switch_work(work);
@@ -126,7 +124,7 @@ void executor::sched_reconnect()
 void executor::log_socket_error(std::string&& sError)
 {
 	vSocketLog.emplace_back(std::move(sError));
-	printer::inst()->print_msg(L1, "SOCKET ERROR - %s", vSocketLog.back().msg.c_str());
+	//printer::inst()->print_msg(L1, "SOCKET ERROR - %s", vSocketLog.back().msg.c_str());
 }
 
 void executor::log_result_error(std::string&& sError)
@@ -181,11 +179,11 @@ void executor::on_sock_ready(size_t pool_id)
 			pool->disconnect();
 
 		current_pool_id = dev_pool_id;
-		printer::inst()->print_msg(L1, "Dev pool logged in. Switching work.");
+		//printer::inst()->print_msg(L1, "Dev pool logged in. Switching work.");
 		return;
 	}
 
-	printer::inst()->print_msg(L1, "Connected. Logging in...");
+	//printer::inst()->print_msg(L1, "Connected. Logging in...");
 
 	if (!pool->cmd_login(jconf::inst()->GetWalletAddress(), jconf::inst()->GetPoolPwd()))
 	{
@@ -213,7 +211,7 @@ void executor::on_sock_error(size_t pool_id, std::string&& sError)
 		if(current_pool_id != dev_pool_id)
 			return;
 
-		printer::inst()->print_msg(L1, "Dev pool connection error. Switching work.");
+		//printer::inst()->print_msg(L1, "Dev pool connection error. Switching work.");
 		on_switch_pool(usr_pool_id);
 		return;
 	}
@@ -243,10 +241,10 @@ void executor::on_pool_have_job(size_t pool_id, pool_job& oPoolJob)
 	if(iPoolDiff != pool->get_current_diff())
 	{
 		iPoolDiff = pool->get_current_diff();
-		printer::inst()->print_msg(L2, "Difficulty changed. Now: %llu.", int_port(iPoolDiff));
+		//printer::inst()->print_msg(L2, "Difficulty changed. Now: %llu.", int_port(iPoolDiff));
 	}
 
-	printer::inst()->print_msg(L3, "New block detected.");
+	//printer::inst()->print_msg(L3, "New block detected.");
 }
 
 void executor::on_miner_result(size_t pool_id, job_result& oResult)
@@ -281,19 +279,19 @@ void executor::on_miner_result(size_t pool_id, job_result& oResult)
 	{
 		uint64_t* targets = (uint64_t*)oResult.bResult;
 		log_result_ok(jpsock::t64_to_diff(targets[3]));
-		printer::inst()->print_msg(L3, "Result accepted by the pool.");
+		//printer::inst()->print_msg(L3, "Result accepted by the pool.");
 	}
 	else
 	{
 		if(!pool->have_sock_error())
 		{
-			printer::inst()->print_msg(L3, "Result rejected by the pool.");
+			//printer::inst()->print_msg(L3, "Result rejected by the pool.");
 
 			std::string error = pool->get_call_error();
 
 			if(strncasecmp(error.c_str(), "Unauthenticated", 15) == 0)
 			{
-				printer::inst()->print_msg(L2, "Your miner was unable to find a share in time. Either the pool difficulty is too high, or the pool timeout is too low.");
+				//printer::inst()->print_msg(L2, "Your miner was unable to find a share in time. Either the pool difficulty is too high, or the pool timeout is too low.");
 				pool->disconnect();
 			}
 
@@ -312,7 +310,7 @@ void executor::on_reconnect(size_t pool_id)
 	if(pool_id == dev_pool_id)
 		return;
 
-	printer::inst()->print_msg(L1, "Connecting to pool %s ...", jconf::inst()->GetPoolAddress());
+	//printer::inst()->print_msg(L1, "Connecting to pool %s ...", jconf::inst()->GetPoolAddress());
 
 	if(!pool->connect(jconf::inst()->GetPoolAddress(), error))
 	{
@@ -333,14 +331,16 @@ void executor::on_switch_pool(size_t pool_id)
 
 		// If it fails, it fails, we carry on on the usr pool
 		// as we never receive further events
-		printer::inst()->print_msg(L1, "Connecting to dev pool...");
+		//printer::inst()->print_msg(L1, "Connecting to dev pool...");
 		const char* dev_pool_addr = jconf::inst()->GetTlsSetting() ? "donate.xmr-stak.net:6666" : "donate.xmr-stak.net:3333";
 		if(!pool->connect(dev_pool_addr, error))
-			printer::inst()->print_msg(L1, "Error connecting to dev pool. Staying with user pool.");
+		{
+			//printer::inst()->print_msg(L1, "Error connecting to dev pool. Staying with user pool.");
+		}
 	}
 	else
 	{
-		printer::inst()->print_msg(L1, "Switching back to user pool.");
+		//printer::inst()->print_msg(L1, "Switching back to user pool.");
 
 		current_pool_id = pool_id;
 		pool_job oPoolJob;
@@ -608,8 +608,7 @@ void executor::result_report(std::string& out)
 
 	for(size_t i=0; i < 10; i += 2)
 	{
-		snprintf(num, sizeof(num), "| %2llu | %16llu | %2llu | %16llu |\n",
-			int_port(i), int_port(iTopDiff[i]), int_port(i+1), int_port(iTopDiff[i+1]));
+		//snprintf(num, sizeof(num), "| %2llu | %16llu | %2llu | %16llu |\n", int_port(i), int_port(iTopDiff[i]), int_port(i+1), int_port(iTopDiff[i+1]));
 		out.append(num);
 	}
 
@@ -619,8 +618,7 @@ void executor::result_report(std::string& out)
 		out.append("| Count | Error text                       | Last seen           |\n");
 		for(size_t i=1; i < ln; i++)
 		{
-			snprintf(num, sizeof(num), "| %5llu | %-32.32s | %s |\n", int_port(vMineResults[i].count),
-				vMineResults[i].msg.c_str(), time_format(date, sizeof(date), vMineResults[i].time));
+			//snprintf(num, sizeof(num), "| %5llu | %-32.32s | %s |\n", int_port(vMineResults[i].count), vMineResults[i].msg.c_str(), time_format(date, sizeof(date), vMineResults[i].time));
 			out.append(num);
 		}
 	}
@@ -691,7 +689,7 @@ void executor::print_report(ex_event_name ev)
 		break;
 	}
 
-	printer::inst()->print_str(out.c_str());
+	//printer::inst()->print_str(out.c_str());
 }
 
 void executor::http_hashrate_report(std::string& out)
@@ -768,18 +766,18 @@ void executor::http_result_report(std::string& out)
 			/ iPoolCallTimes.size();
 	}
 
-	snprintf(buffer, sizeof(buffer), sHtmlResultBodyHigh,
-		iPoolDiff, iGoodRes, iTotalRes, fGoodResPrc, fAvgResTime, iPoolHashes,
-		int_port(iTopDiff[0]), int_port(iTopDiff[1]), int_port(iTopDiff[2]), int_port(iTopDiff[3]),
-		int_port(iTopDiff[4]), int_port(iTopDiff[5]), int_port(iTopDiff[6]), int_port(iTopDiff[7]),
-		int_port(iTopDiff[8]), int_port(iTopDiff[9]));
+	//snprintf(buffer, sizeof(buffer), sHtmlResultBodyHigh,
+	//	iPoolDiff, iGoodRes, iTotalRes, fGoodResPrc, fAvgResTime, iPoolHashes,
+	//	int_port(iTopDiff[0]), int_port(iTopDiff[1]), int_port(iTopDiff[2]), int_port(iTopDiff[3]),
+	//	int_port(iTopDiff[4]), int_port(iTopDiff[5]), int_port(iTopDiff[6]), int_port(iTopDiff[7]),
+	//	int_port(iTopDiff[8]), int_port(iTopDiff[9]));
 
 	out.append(buffer);
 
 	for(size_t i=1; i < vMineResults.size(); i++)
 	{
-		snprintf(buffer, sizeof(buffer), sHtmlResultTableRow, vMineResults[i].msg.c_str(),
-			int_port(vMineResults[i].count), time_format(date, sizeof(date), vMineResults[i].time));
+		//snprintf(buffer, sizeof(buffer), sHtmlResultTableRow, vMineResults[i].msg.c_str(),
+		//	int_port(vMineResults[i].count), time_format(date, sizeof(date), vMineResults[i].time));
 		out.append(buffer);
 	}
 

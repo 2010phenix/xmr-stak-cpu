@@ -22,7 +22,6 @@
   */
 
 #include "jconf.h"
-#include "console.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,7 +37,7 @@
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "jext.h"
-#include "console.h"
+//#include "console.h"
 
 using namespace rapidjson;
 
@@ -290,14 +289,14 @@ bool jconf::parse_config(const char* sFilename)
 
 	if(!check_cpu_features())
 	{
-		printer::inst()->print_msg(L0, "CPU support of SSE2 is required.");
+		//printer::inst()->print_msg(L0, "CPU support of SSE2 is required.");
 		return false;
 	}
 
 	pFile = fopen(sFilename, "rb");
 	if (pFile == NULL)
 	{
-		printer::inst()->print_msg(L0, "Failed to open config file %s.", sFilename);
+		//printer::inst()->print_msg(L0, "Failed to open config file %s.", sFilename);
 		return false;
 	}
 
@@ -308,14 +307,14 @@ bool jconf::parse_config(const char* sFilename)
 	if(flen >= 64*1024)
 	{
 		fclose(pFile);
-		printer::inst()->print_msg(L0, "Oversized config file - %s.", sFilename);
+		//printer::inst()->print_msg(L0, "Oversized config file - %s.", sFilename);
 		return false;
 	}
 
 	if(flen <= 16)
 	{
 		fclose(pFile);
-		printer::inst()->print_msg(L0, "File is empty or too short - %s.", sFilename);
+		//printer::inst()->print_msg(L0, "File is empty or too short - %s.", sFilename);
 		return false;
 	}
 
@@ -324,7 +323,7 @@ bool jconf::parse_config(const char* sFilename)
 	{
 		free(buffer);
 		fclose(pFile);
-		printer::inst()->print_msg(L0, "Read error while reading %s.", sFilename);
+		//printer::inst()->print_msg(L0, "Read error while reading %s.", sFilename);
 		return false;
 	}
 	fclose(pFile);
@@ -347,15 +346,14 @@ bool jconf::parse_config(const char* sFilename)
 
 	if(prv->jsonDoc.HasParseError())
 	{
-		printer::inst()->print_msg(L0, "JSON config parse error(offset %llu): %s",
-			int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
+		//printer::inst()->print_msg(L0, "JSON config parse error(offset %llu): %s", int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
 		return false;
 	}
 
 
 	if(!prv->jsonDoc.IsObject())
 	{ //This should never happen as we created the root ourselves
-		printer::inst()->print_msg(L0, "Invalid config file. No root?\n");
+		//printer::inst()->print_msg(L0, "Invalid config file. No root?\n");
 		return false;
 	}
 
@@ -363,7 +361,7 @@ bool jconf::parse_config(const char* sFilename)
 	{
 		if(oConfigValues[i].iName != i)
 		{
-			printer::inst()->print_msg(L0, "Code error. oConfigValues are not in order.");
+			//printer::inst()->print_msg(L0, "Code error. oConfigValues are not in order.");
 			return false;
 		}
 
@@ -371,13 +369,13 @@ bool jconf::parse_config(const char* sFilename)
 
 		if(prv->configValues[i] == nullptr)
 		{
-			printer::inst()->print_msg(L0, "Invalid config file. Missing value \"%s\".", oConfigValues[i].sName);
+			//printer::inst()->print_msg(L0, "Invalid config file. Missing value \"%s\".", oConfigValues[i].sName);
 			return false;
 		}
 
 		if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
 		{
-			printer::inst()->print_msg(L0, "Invalid config file. Value \"%s\" has unexpected type.", oConfigValues[i].sName);
+			//printer::inst()->print_msg(L0, "Invalid config file. Value \"%s\" has unexpected type.", oConfigValues[i].sName);
 			return false;
 		}
 	}
@@ -387,21 +385,20 @@ bool jconf::parse_config(const char* sFilename)
 	{
 		if(!GetThreadConfig(i, c))
 		{
-			printer::inst()->print_msg(L0, "Thread %llu has invalid config.", int_port(i));
+			//printer::inst()->print_msg(L0, "Thread %llu has invalid config.", int_port(i));
 			return false;
 		}
 	}
 
 	if(NiceHashMode() && GetThreadCount() >= 32)
 	{
-		printer::inst()->print_msg(L0, "You need to use less than 32 threads in NiceHash mode.");
+		//printer::inst()->print_msg(L0, "You need to use less than 32 threads in NiceHash mode.");
 		return false;
 	}
 
 	if(GetSlowMemSetting() == unknown_value)
 	{
-		printer::inst()->print_msg(L0,
-			"Invalid config file. use_slow_memory must be \"always\", \"no_mlck\", \"warn\" or \"never\"");
+		//printer::inst()->print_msg(L0, "Invalid config file. use_slow_memory must be \"always\", \"no_mlck\", \"warn\" or \"never\"");
 		return false;
 	}
 
@@ -409,30 +406,26 @@ bool jconf::parse_config(const char* sFilename)
 		!prv->configValues[iNetRetry]->IsUint64() ||
 		!prv->configValues[iGiveUpLimit]->IsUint64())
 	{
-		printer::inst()->print_msg(L0,
-			"Invalid config file. call_timeout, retry_time and giveup_limit need to be positive integers.");
+		//printer::inst()->print_msg(L0, "Invalid config file. call_timeout, retry_time and giveup_limit need to be positive integers.");
 		return false;
 	}
 
 	if(!prv->configValues[iVerboseLevel]->IsUint64() || !prv->configValues[iAutohashTime]->IsUint64())
 	{
-		printer::inst()->print_msg(L0,
-			"Invalid config file. verbose_level and h_print_time need to be positive integers.");
+		//printer::inst()->print_msg(L0, "Invalid config file. verbose_level and h_print_time need to be positive integers.");
 		return false;
 	}
 
 	if(!prv->configValues[iHttpdPort]->IsUint() || prv->configValues[iHttpdPort]->GetUint() > 0xFFFF)
 	{
-		printer::inst()->print_msg(L0,
-			"Invalid config file. httpd_port has to be in the range 0 to 65535.");
+		//printer::inst()->print_msg(L0, "Invalid config file. httpd_port has to be in the range 0 to 65535.");
 		return false;
 	}
 
 #ifdef CONF_NO_TLS
 	if(prv->configValues[bTlsMode]->GetBool())
 	{
-		printer::inst()->print_msg(L0,
-			"Invalid config file. TLS enabled while the application has been compiled without TLS support.");
+		//printer::inst()->print_msg(L0, "Invalid config file. TLS enabled while the application has been compiled without TLS support.");
 		return false;
 	}
 #endif // CONF_NO_TLS
@@ -440,17 +433,19 @@ bool jconf::parse_config(const char* sFilename)
 #ifdef _WIN32
 	if(GetSlowMemSetting() == no_mlck)
 	{
-		printer::inst()->print_msg(L0, "On Windows large pages need mlock. Please use another option.");
+		//printer::inst()->print_msg(L0, "On Windows large pages need mlock. Please use another option.");
 		return false;
 	}
 #endif // _WIN32
 
-	printer::inst()->set_verbose_level(prv->configValues[iVerboseLevel]->GetUint64());
+	//printer::inst()->set_verbose_level(prv->configValues[iVerboseLevel]->GetUint64());
 
 	if(!NeedsAutoconf())
 	{
-		if(!bHaveAes)
-			printer::inst()->print_msg(L0, "Your CPU doesn't support hardware AES. Don't expect high hashrates.");
+		if (!bHaveAes)
+		{
+			//printer::inst()->print_msg(L0, "Your CPU doesn't support hardware AES. Don't expect high hashrates.");
+		}
 	}
 
 	return true;
