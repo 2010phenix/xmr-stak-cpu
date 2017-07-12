@@ -37,7 +37,6 @@ public:
 	bool TlsSecureAlgos();
 	const char* GetTlsFingerprint();
 
-	const char* GetPoolAddress();
 	const char* GetPoolPwd();
 	const char* GetWalletAddress();
 

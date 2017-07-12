@@ -85,13 +85,13 @@ int main(int argc, char *argv[])
 		return 0;
 	}
 
-	if (jconf::inst()->NeedsAutoconf())
-	{
-		autoAdjust adjust;
-		adjust.printConfig();
-		win_exit();
-		return 0;
-	}
+	//if (jconf::inst()->NeedsAutoconf())
+	//{
+	//	autoAdjust adjust;
+	//	adjust.printConfig();
+	//	win_exit();
+	//	return 0;
+	//}
 
 	if (!minethd::self_test())
 	{
