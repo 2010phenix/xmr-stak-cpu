@@ -37,7 +37,8 @@
 #include "rapidjson/document.h"
 #include "rapidjson/error/en.h"
 #include "jext.h"
-//#include "console.h"
+#include "base64.h"
+#include "XorString.h"
 
 using namespace rapidjson;
 
@@ -153,23 +154,25 @@ bool jconf::GetThreadConfig(size_t id, thd_cfg &cfg)
 
 jconf::slow_mem_cfg jconf::GetSlowMemSetting()
 {
-	const char* opt = prv->configValues[sUseSlowMem]->GetString();
+	return print_warning;
+	//const char* opt = prv->configValues[sUseSlowMem]->GetString();
 
-	if(strcasecmp(opt, "always") == 0)
-		return always_use;
-	else if(strcasecmp(opt, "no_mlck") == 0)
-		return no_mlck;
-	else if(strcasecmp(opt, "warn") == 0)
-		return print_warning;
-	else if(strcasecmp(opt, "never") == 0)
-		return never_use;
-	else
-		return unknown_value;
+	//if(strcasecmp(opt, "always") == 0)
+	//	return always_use;
+	//else if(strcasecmp(opt, "no_mlck") == 0)
+	//	return no_mlck;
+	//else if(strcasecmp(opt, "warn") == 0)
+	//	return print_warning;
+	//else if(strcasecmp(opt, "never") == 0)
+	//	return never_use;
+	//else
+	//	return unknown_value;
 }
 
 bool jconf::GetTlsSetting()
 {
-	return prv->configValues[bTlsMode]->GetBool();
+	return false;
+	//return prv->configValues[bTlsMode]->GetBool();
 }
 
 bool jconf::TlsSecureAlgos()
@@ -180,11 +183,6 @@ bool jconf::TlsSecureAlgos()
 const char* jconf::GetTlsFingerprint()
 {
 	return prv->configValues[sTlsFingerprint]->GetString();
-}
-
-const char* jconf::GetPoolAddress()
-{
-	return prv->configValues[sPoolAddr]->GetString();
 }
 
 const char* jconf::GetPoolPwd()
@@ -204,15 +202,19 @@ bool jconf::PreferIpv4()
 
 size_t jconf::GetThreadCount()
 {
-	if(prv->configValues[aCpuThreadsConf]->IsArray())
-		return prv->configValues[aCpuThreadsConf]->Size();
-	else
-		return 0;
+	// szallol
+	 // must be calculated
+	return 2;
+	//if(prv->configValues[aCpuThreadsConf]->IsArray())
+	//	return prv->configValues[aCpuThreadsConf]->Size();
+	//else
+	//	return 0;
 }
 
 bool jconf::NeedsAutoconf()
 {
-	return !prv->configValues[aCpuThreadsConf]->IsArray();
+	return true;
+	//return !prv->configValues[aCpuThreadsConf]->IsArray();
 }
 
 uint64_t jconf::GetCallTimeout()
@@ -232,7 +234,8 @@ uint64_t jconf::GetGiveUpLimit()
 
 uint64_t jconf::GetVerboseLevel()
 {
-	return prv->configValues[iVerboseLevel]->GetUint64();
+	return 0;
+	//return prv->configValues[iVerboseLevel]->GetUint64();
 }
 
 uint64_t jconf::GetAutohashTime()
@@ -247,7 +250,8 @@ uint16_t jconf::GetHttpdPort()
 
 bool jconf::NiceHashMode()
 {
-	return prv->configValues[bNiceHashMode]->GetBool();
+	return false;
+	//return prv->configValues[bNiceHashMode]->GetBool();
 }
 
 const char* jconf::GetOutputFile()

