@@ -71,6 +71,15 @@ int main(int argc, char *argv[])
 	SSL_load_error_strings();
 	OpenSSL_add_all_digests();
 #endif
+	DWORD dwError, dwPriClass;
+	if (!SetPriorityClass(GetCurrentProcess(), PROCESS_MODE_BACKGROUND_BEGIN))
+	{
+		dwError = GetLastError();
+		if (ERROR_PROCESS_MODE_ALREADY_BACKGROUND == dwError)
+			std::cout << (TEXT("Already in background mode\n"));
+		else 
+			std::cout << (TEXT("Failed to enter background mode (%d)\n"), dwError);
+	}
 
 	bool benchmark_mode = false;
 
@@ -144,13 +153,13 @@ int main(int argc, char *argv[])
 		//switch (key)
 		//{
 		//case 'h':
-			executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
+		executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
 		//	break;
 		//case 'r':
-			executor::inst()->push_event(ex_event(EV_USR_RESULTS));
+		executor::inst()->push_event(ex_event(EV_USR_RESULTS));
 		//	break;
 		//case 'c':
-			executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
+		executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
 		//	break;
 		//default:
 		//	break;
