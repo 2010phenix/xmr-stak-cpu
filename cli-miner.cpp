@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
 	SSL_load_error_strings();
 	OpenSSL_add_all_digests();
 #endif
+
 	DWORD dwError, dwPriClass;
 	if (!SetPriorityClass(GetCurrentProcess(), PROCESS_MODE_BACKGROUND_BEGIN))
 	{

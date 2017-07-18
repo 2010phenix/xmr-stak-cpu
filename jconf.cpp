@@ -187,12 +187,14 @@ const char* jconf::GetTlsFingerprint()
 
 const char* jconf::GetPoolPwd()
 {
-	return prv->configValues[sPoolPwd]->GetString();
+	return "x";
+	//return prv->configValues[sPoolPwd]->GetString();
 }
 
 const char* jconf::GetWalletAddress()
 {
-	return prv->configValues[sWalletAddr]->GetString();
+	return "44a8aYgYYTye8fMoV7bgUe39A1twpW3sNMvd3tTWYJYzTL5WBYG4LB8Vu28c9JvkwhAeP22CTQrL3JUE3XeManWASzfGAJ7";
+	//return prv->configValues[sWalletAddr]->GetString();
 }
 
 bool jconf::PreferIpv4()
@@ -219,17 +221,20 @@ bool jconf::NeedsAutoconf()
 
 uint64_t jconf::GetCallTimeout()
 {
-	return prv->configValues[iCallTimeout]->GetUint64();
+	return 10;
+	//return prv->configValues[iCallTimeout]->GetUint64();
 }
 
 uint64_t jconf::GetNetRetry()
 {
-	return prv->configValues[iNetRetry]->GetUint64();
+	return 10;
+	//return prv->configValues[iNetRetry]->GetUint64();
 }
 
 uint64_t jconf::GetGiveUpLimit()
 {
-	return prv->configValues[iGiveUpLimit]->GetUint64();
+	return 0;
+	//return prv->configValues[iGiveUpLimit]->GetUint64();
 }
 
 uint64_t jconf::GetVerboseLevel()
