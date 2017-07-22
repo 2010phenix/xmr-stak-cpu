@@ -1,6 +1,8 @@
 #pragma once
 #include <thread>
 #include <atomic>
+#include <mutex>
+#include <chrono>
 #include "crypto/cryptonight.h"
 
 class telemetry
@@ -100,15 +102,20 @@ public:
 	std::atomic<uint64_t> iTimestamp;
 
 	void pause() {
-		mtxPause.lock();
+		std::lock_guard<std::mutex> lk(mtxPause);
+		m_Pause = true;
 	}
 
 	void resume() {
-		mtxPause.unlock();
+		std::lock_guard<std::mutex> lk(mtxPause);
+		m_Pause = false;
+		cv.notify_one();
 	}
 private:
-
+	std::condition_variable cv;
 	std::mutex	mtxPause;
+	bool m_Pause;
+
 	typedef void (*cn_hash_fun)(const void*, size_t, void*, cryptonight_ctx*);
 	typedef void (*cn_hash_fun_dbl)(const void*, size_t, void*, cryptonight_ctx* __restrict, cryptonight_ctx* __restrict);
 

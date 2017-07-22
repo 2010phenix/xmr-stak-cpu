@@ -137,10 +137,28 @@ int main(int argc, char *argv[])
 
 	int key;
 	bool paused = true;
+	LASTINPUTINFO *pInputInfo = new LASTINPUTINFO();
+	pInputInfo->cbSize = sizeof(LASTINPUTINFO);
 	while (true)
 	{
-		//std::this_thread::sleep_for(2s);
-		key = get_key();
+		std::this_thread::sleep_for(2s);
+
+		bool succ = GetLastInputInfo(pInputInfo);
+		auto tickCount = GetTickCount();
+
+		auto idleTime = (double)(tickCount - pInputInfo->dwTime) / 1000;
+
+		std::cout << "idle time: " << idleTime << " sec\n";
+
+		if (idleTime > 10) {
+			executor::inst()->push_event(ex_event(EV_RESUME));
+			std::cout << "resumed\n";
+		}
+		else {
+			executor::inst()->push_event(ex_event(EV_PAUSE));
+			std::cout << "paused\n";
+		}
+		/*key = get_key();
 
 		switch (key)
 		{
@@ -166,7 +184,7 @@ int main(int argc, char *argv[])
 			break;
 		default:
 			break;
-		}
+		}*/
 	}
 
 	return 0;

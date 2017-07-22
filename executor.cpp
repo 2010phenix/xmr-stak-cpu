@@ -366,15 +366,22 @@ void executor::on_switch_pool(size_t pool_id)
 }
 
 void executor::pause() {
-	for (size_t i = 0; i < pvThreads->size(); i++) {
-		pvThreads->at(i)->pause();
-	}
+	//if (!m_paused) {
+		for (size_t i = 0; i < pvThreads->size(); i++) {
+			pvThreads->at(i)->pause();
+		}
+
+	//	m_paused = true;
+	//}
 }
 
 void executor::resume() {
-	for (size_t i = 0; i < pvThreads->size(); i++) {
-		pvThreads->at(i)->resume();
-	}
+	//if (m_paused) {
+		for (size_t i = 0; i < pvThreads->size(); i++) {
+			pvThreads->at(i)->resume();
+		}
+	//	m_paused = false;
+	//}
 }
 
 void executor::ex_main()
@@ -383,6 +390,9 @@ void executor::ex_main()
 
 	minethd::miner_work oWork = minethd::miner_work();
 	pvThreads = minethd::thread_starter(oWork);
+
+	pause();
+
 	telem = new telemetry(pvThreads->size());
 
 	current_pool_id = usr_pool_id;

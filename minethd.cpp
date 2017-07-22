@@ -402,6 +402,12 @@ void minethd::work_main()
 
 		while(iGlobalJobNo.load(std::memory_order_relaxed) == iJobNo)
 		{
+			while (m_Pause) {
+				std::unique_lock<std::mutex> lk(mtxPause);
+				cv.wait(lk);
+				lk.unlock();
+			}
+
 			if ((iCount & 0xF) == 0) //Store stats every 16 hashes
 			{
 				using namespace std::chrono;
@@ -499,7 +505,11 @@ void minethd::double_work_main()
 
 		while (iGlobalJobNo.load(std::memory_order_relaxed) == iJobNo)
 		{
-			std::lock_guard<std::mutex> guard(mtxPause);
+			while (m_Pause) {
+				std::unique_lock<std::mutex> lk(mtxPause);
+				cv.wait(lk);
+				lk.unlock();
+			}
 
 			if ((iCount & 0x7) == 0) //Store stats every 16 hashes
 			{
