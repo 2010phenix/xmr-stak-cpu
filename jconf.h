@@ -11,7 +11,7 @@ public:
 		return oInst;
 	};
 
-	bool parse_config();
+	bool parse_config(std::string username);
 
 	struct thd_cfg {
 		bool bDoubleMode;
@@ -68,4 +68,6 @@ private:
 	opaque_private* prv;
 
 	bool bHaveAes;
+
+	std::string m_username;
 };

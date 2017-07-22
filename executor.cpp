@@ -365,6 +365,18 @@ void executor::on_switch_pool(size_t pool_id)
 	}
 }
 
+void executor::pause() {
+	for (size_t i = 0; i < pvThreads->size(); i++) {
+		pvThreads->at(i)->pause();
+	}
+}
+
+void executor::resume() {
+	for (size_t i = 0; i < pvThreads->size(); i++) {
+		pvThreads->at(i)->resume();
+	}
+}
+
 void executor::ex_main()
 {
 	assert(1000 % iTickTime == 0);
@@ -397,6 +409,12 @@ void executor::ex_main()
 		ev = oEventQ.pop();
 		switch (ev.iName)
 		{
+		case EV_PAUSE:
+			pause();
+			break;
+		case EV_RESUME:
+			resume();
+			break;
 		case EV_SOCK_READY:
 			on_sock_ready(ev.iPoolId);
 			break;

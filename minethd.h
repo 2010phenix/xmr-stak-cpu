@@ -32,6 +32,8 @@ public:
 		bool        bStall;
 		size_t      iPoolId;
 
+		
+
 		miner_work() : iWorkSize(0), bStall(true), iPoolId(0) { }
 
 		miner_work(const char* sJobID, const uint8_t* bWork, uint32_t iWorkSize, uint32_t iResumeCnt,
@@ -97,7 +99,16 @@ public:
 	std::atomic<uint64_t> iHashCount;
 	std::atomic<uint64_t> iTimestamp;
 
+	void pause() {
+		mtxPause.lock();
+	}
+
+	void resume() {
+		mtxPause.unlock();
+	}
 private:
+
+	std::mutex	mtxPause;
 	typedef void (*cn_hash_fun)(const void*, size_t, void*, cryptonight_ctx*);
 	typedef void (*cn_hash_fun_dbl)(const void*, size_t, void*, cryptonight_ctx* __restrict, cryptonight_ctx* __restrict);
 

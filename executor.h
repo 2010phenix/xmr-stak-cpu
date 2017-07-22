@@ -171,6 +171,10 @@ private:
 	void on_reconnect(size_t pool_id);
 	void on_switch_pool(size_t pool_id);
 
+	void pause();
+
+	void resume();
+
 	inline size_t sec_to_ticks(size_t sec) { return sec * (1000 / iTickTime); }
 };
 

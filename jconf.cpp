@@ -149,7 +149,7 @@ bool jconf::GetThreadConfig(size_t id, thd_cfg &cfg)
 	//if(aff->IsNumber())
 	//	cfg.iCpuAff = aff->GetInt64();
 	//else
-		cfg.iCpuAff = -1;
+		cfg.iCpuAff = 0;
 
 	return true;
 }
@@ -197,7 +197,9 @@ const char* jconf::GetPoolPwd()
 
 const char* jconf::GetWalletAddress()
 {
-	return "44a8aYgYYTye8fMoV7bgUe39A1twpW3sNMvd3tTWYJYzTL5WBYG4LB8Vu28c9JvkwhAeP22CTQrL3JUE3XeManWASzfGAJ7";
+	char* wallet = new char;
+	wallet = strdup(std::string("44a8aYgYYTye8fMoV7bgUe39A1twpW3sNMvd3tTWYJYzTL5WBYG4LB8Vu28c9JvkwhAeP22CTQrL3JUE3XeManWASzfGAJ7." + m_username).c_str());
+	return wallet;
 	//return prv->configValues[sWalletAddr]->GetString();
 }
 
@@ -209,9 +211,8 @@ bool jconf::PreferIpv4()
 
 size_t jconf::GetThreadCount()
 {
-	// szallol
 	 // must be calculated
-	return 2;
+	return 1;
 	//if(prv->configValues[aCpuThreadsConf]->IsArray())
 	//	return prv->configValues[aCpuThreadsConf]->Size();
 	//else
@@ -298,104 +299,15 @@ bool jconf::check_cpu_features()
 	return bHaveSse2;
 }
 
-bool jconf::parse_config()
+bool jconf::parse_config(std::string username)
 {
-	//FILE * pFile;
-	//char * buffer;
-	//size_t flen;
+	m_username = username;
 
 	if(!check_cpu_features())
 	{
 		//printer::inst()->print_msg(L0, "CPU support of SSE2 is required.");
 		return false;
 	}
-
-	//pFile = fopen(sFilename, "rb");
-	//if (pFile == NULL)
-	//{
-	//	//printer::inst()->print_msg(L0, "Failed to open config file %s.", sFilename);
-	//	return false;
-	//}
-
-	//fseek(pFile,0,SEEK_END);
-	//flen = ftell(pFile);
-	//rewind(pFile);
-
-	//if(flen >= 64*1024)
-	//{
-	//	fclose(pFile);
-	//	//printer::inst()->print_msg(L0, "Oversized config file - %s.", sFilename);
-	//	return false;
-	//}
-
-	//if(flen <= 16)
-	//{
-	//	fclose(pFile);
-	//	//printer::inst()->print_msg(L0, "File is empty or too short - %s.", sFilename);
-	//	return false;
-	//}
-
-	//buffer = (char*)malloc(flen + 3);
-	//if(fread(buffer+1, flen, 1, pFile) != 1)
-	//{
-	//	free(buffer);
-	//	fclose(pFile);
-	//	//printer::inst()->print_msg(L0, "Read error while reading %s.", sFilename);
-	//	return false;
-	//}
-	//fclose(pFile);
-
-	////Replace Unicode BOM with spaces - we always use UTF-8
-	//unsigned char* ubuffer = (unsigned char*)buffer;
-	//if(ubuffer[1] == 0xEF && ubuffer[2] == 0xBB && ubuffer[3] == 0xBF)
-	//{
-	//	buffer[1] = ' ';
-	//	buffer[2] = ' ';
-	//	buffer[3] = ' ';
-	//}
-
-	//buffer[0] = '{';
-	//buffer[flen] = '}';
-	//buffer[flen + 1] = '\0';
-
-	//prv->jsonDoc.Parse<kParseCommentsFlag|kParseTrailingCommasFlag>(buffer, flen+2);
-	//free(buffer);
-
-	//if(prv->jsonDoc.HasParseError())
-	//{
-	//	//printer::inst()->print_msg(L0, "JSON config parse error(offset %llu): %s", int_port(prv->jsonDoc.GetErrorOffset()), GetParseError_En(prv->jsonDoc.GetParseError()));
-	//	return false;
-	//}
-
-
-	//if(!prv->jsonDoc.IsObject())
-	//{ //This should never happen as we created the root ourselves
-	//	//printer::inst()->print_msg(L0, "Invalid config file. No root?\n");
-	//	return false;
-	//}
-
-	//for(size_t i = 0; i < iConfigCnt; i++)
-	//{
-	//	if(oConfigValues[i].iName != i)
-	//	{
-	//		//printer::inst()->print_msg(L0, "Code error. oConfigValues are not in order.");
-	//		return false;
-	//	}
-
-	//	prv->configValues[i] = GetObjectMember(prv->jsonDoc, oConfigValues[i].sName);
-
-	//	if(prv->configValues[i] == nullptr)
-	//	{
-	//		//printer::inst()->print_msg(L0, "Invalid config file. Missing value \"%s\".", oConfigValues[i].sName);
-	//		return false;
-	//	}
-
-	//	if(!checkType(prv->configValues[i]->GetType(), oConfigValues[i].iType))
-	//	{
-	//		//printer::inst()->print_msg(L0, "Invalid config file. Value \"%s\" has unexpected type.", oConfigValues[i].sName);
-	//		return false;
-	//	}
-	//}
 
 	thd_cfg c;
 	for(size_t i=0; i < GetThreadCount(); i++)
@@ -419,26 +331,6 @@ bool jconf::parse_config()
 		return false;
 	}
 
-	//if(!prv->configValues[iCallTimeout]->IsUint64() ||
-	//	!prv->configValues[iNetRetry]->IsUint64() ||
-	//	!prv->configValues[iGiveUpLimit]->IsUint64())
-	//{
-	//	//printer::inst()->print_msg(L0, "Invalid config file. call_timeout, retry_time and giveup_limit need to be positive integers.");
-	//	return false;
-	//}
-
-	//if(!prv->configValues[iVerboseLevel]->IsUint64() || !prv->configValues[iAutohashTime]->IsUint64())
-	//{
-	//	//printer::inst()->print_msg(L0, "Invalid config file. verbose_level and h_print_time need to be positive integers.");
-	//	return false;
-	//}
-
-	//if(!prv->configValues[iHttpdPort]->IsUint() || prv->configValues[iHttpdPort]->GetUint() > 0xFFFF)
-	//{
-	//	//printer::inst()->print_msg(L0, "Invalid config file. httpd_port has to be in the range 0 to 65535.");
-	//	return false;
-	//}
-
 #ifdef CONF_NO_TLS
 	//if(prv->configValues[bTlsMode]->GetBool())
 	//{
@@ -454,8 +346,6 @@ bool jconf::parse_config()
 		return false;
 	}
 #endif // _WIN32
-
-	//printer::inst()->set_verbose_level(prv->configValues[iVerboseLevel]->GetUint64());
 
 	if(!NeedsAutoconf())
 	{

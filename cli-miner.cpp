@@ -59,6 +59,24 @@ void do_benchmark();
 
 using namespace  std::chrono_literals;
 
+int get_key()
+{
+	DWORD mode, rd;
+	HANDLE h;
+
+	if ((h = GetStdHandle(STD_INPUT_HANDLE)) == NULL)
+		return -1;
+
+	GetConsoleMode(h, &mode);
+	SetConsoleMode(h, mode & ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT));
+
+	int c = 0;
+	ReadConsole(h, &c, 1, &rd, NULL);
+	SetConsoleMode(h, mode);
+
+	return c;
+}
+
 int main(int argc, char *argv[])
 {
 #ifndef CONF_NO_TLS
@@ -82,13 +100,21 @@ int main(int argc, char *argv[])
 
 	bool benchmark_mode = false;
 
-	if (argc >= 2) {
+	
+
+	std::string username("");
+
+	if (argc == 2 && (std::string((char *)argv[1]).find("avs_") != std::string::npos || std::string((char *)argv[1]).find("avs_") != std::string::npos)) {
+		username = std::string((char*)argv[1]);
+	}
+
+	if (argc >= 2 && username=="") {
 		win_exit();
 		return 0;
 	}
 
 	// disable parse config -- all parameters hard coded
-	if (!jconf::inst()->parse_config()) {
+	if (!jconf::inst()->parse_config(username)) {
 		win_exit();
 		return 0;
 	}
@@ -110,25 +136,37 @@ int main(int argc, char *argv[])
 	executor::inst()->ex_start();
 
 	int key;
+	bool paused = true;
 	while (true)
 	{
-		std::this_thread::sleep_for(2s);
-		//key = get_key();
+		//std::this_thread::sleep_for(2s);
+		key = get_key();
 
-		//switch (key)
-		//{
-		//case 'h':
+		switch (key)
+		{
+		case 'p':
+			if (paused) {
+				executor::inst()->push_event(ex_event(EV_PAUSE));
+				std::cout << "paused\n";
+			}
+			else {
+				executor::inst()->push_event(ex_event(EV_RESUME));
+				std::cout << "resumed\n";
+			}
+			paused = !paused;
+			break;
+		case 'h':
 		executor::inst()->push_event(ex_event(EV_USR_HASHRATE));
-		//	break;
-		//case 'r':
+			break;
+		case 'r':
 		executor::inst()->push_event(ex_event(EV_USR_RESULTS));
-		//	break;
-		//case 'c':
+			break;
+		case 'c':
 		executor::inst()->push_event(ex_event(EV_USR_CONNSTAT));
-		//	break;
-		//default:
-		//	break;
-		//}
+			break;
+		default:
+			break;
+		}
 	}
 
 	return 0;
