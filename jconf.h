@@ -11,7 +11,7 @@ public:
 		return oInst;
 	};
 
-	bool parse_config(const char* sFilename);
+	bool parse_config();
 
 	struct thd_cfg {
 		bool bDoubleMode;

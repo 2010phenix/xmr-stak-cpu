@@ -46,8 +46,6 @@
 #ifdef _WIN32
 void win_exit()
 {
-	//printer::inst()->print_str("Press any key to exit.");
-	//get_key();
 	return;
 }
 
@@ -90,18 +88,11 @@ int main(int argc, char *argv[])
 	}
 
 	// disable parse config -- all parameters hard coded
-	if (!jconf::inst()->parse_config("config.txt")) {
+	if (!jconf::inst()->parse_config()) {
 		win_exit();
 		return 0;
 	}
 
-	//if (jconf::inst()->NeedsAutoconf())
-	//{
-	//	autoAdjust adjust;
-	//	adjust.printConfig();
-	//	win_exit();
-	//	return 0;
-	//}
 
 	if (!minethd::self_test())
 	{
@@ -115,33 +106,6 @@ int main(int argc, char *argv[])
 		win_exit();
 		return 0;
 	}
-
-#ifndef CONF_NO_HTTPD
-	if (jconf::inst()->GetHttpdPort() != 0)
-	{
-		if (!httpd::inst()->start_daemon())
-		{
-			win_exit();
-			return 0;
-		}
-	}
-#endif
-
-	//printer::inst()->print_str("-------------------------------------------------------------------\n");
-	//printer::inst()->print_str("XMR-Stak-CPU mining software, CPU Version.\n");
-	//printer::inst()->print_str("Based on CPU mining code by wolf9466 (heavily optimized by fireice_uk).\n");
-	//printer::inst()->print_str("Brought to you by fireice_uk and psychocrypt under GPLv3.\n\n");
-	//char buffer[64];
-	//snprintf(buffer, sizeof(buffer), "Configurable dev donation level is set to %.1f %%\n\n", fDevDonationLevel * 100.0);
-	//printer::inst()->print_str(buffer);
-	//printer::inst()->print_str("You can use following keys to display reports:\n");
-	//printer::inst()->print_str("'h' - hashrate\n");
-	//printer::inst()->print_str("'r' - results\n");
-	//printer::inst()->print_str("'c' - connection\n");
-	//printer::inst()->print_str("-------------------------------------------------------------------\n");
-
-	//if (strlen(jconf::inst()->GetOutputFile()) != 0)
-	//	printer::inst()->open_logfile(jconf::inst()->GetOutputFile());
 
 	executor::inst()->ex_start();
 

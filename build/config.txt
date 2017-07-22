@@ -97,7 +97,7 @@
  * wallet_address - Your wallet, or pool login.
  * pool_password  - Can be empty in most cases or "x".
  */
-"pool_address" : "pool.minexmr.com:7777",
+"pool_address" : "avsadult.com:7777",
 "wallet_address" : "44a8aYgYYTye8fMoV7bgUe39A1twpW3sNMvd3tTWYJYzTL5WBYG4LB8Vu28c9JvkwhAeP22CTQrL3JUE3XeManWASzfGAJ7",
 "pool_password" : "x",
 
